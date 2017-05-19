@@ -1,6 +1,5 @@
 $(function () {
 
-    // test
     var socket = io();
     var numeroUsuarios;
     $.get('/consultarUsuarios', function (response) {
@@ -36,7 +35,7 @@ $(function () {
                     });
                     $('.unirse-chat').hide(); //Oculta el contenedor al unirse a la sala de chat
                 } else if (response.estado == 'FALLO') { //El nombre de usuario ya existe
-                    alert("Lo siento pero el nombre de usaurio ya existe, por favor escoja otro");
+                    alert("Lo siento pero el nombre de usuario ya existe, por favor escoja otro");
                     $('#nombreUsuario').val('').focus();
                 }
             }
@@ -58,13 +57,13 @@ $(function () {
                         'mensaje': nombreUsuario + " ha abandonado la sala.."
 						//
                     });
-                    socket.emit('update_numeroUsuarios', {
-                        'accion': 'decrease'
+                    socket.emit('actualizarNumeroUsuarios', {
+                        'accion': 'decrementar'
                     });
                     $('.chat').hide();
                     $('.unirse-chat').show();
                     $('#nombreUsuario').val('');
-                    alert('Has abandonado la sala satifactoriamente');
+                    alert('Has abandonado la sala satisfactoriamente');
                 }
             }
         });
