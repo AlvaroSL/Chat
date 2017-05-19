@@ -1,1 +1,1 @@
-# Chat
+# Chat web para la asignatura CBD, prueba del concepto del uso de la base de datos Redis como caché usando Node.js, Express.js y Socket.io, además de la plataforma Heroku para su despliegue.

@@ -1,132 +1,139 @@
+//Inicializamos los módulos que necesitamos
 var express = require('express');
 var bodyParser = require('body-parser');
-var app = express();
-var http = require('http').Server(app);
+var aplicacion = express();
+var http = require('http').Server(aplicacion);
 var io = require('socket.io')(http);
 
 var fs = require('fs');
-var creds = '';
+var credenciales = '';
 
 var redis = require('redis');
-var client = '';
+var cliente = '';
 
-// Read credentials from JSON
-fs.readFile('creds.json', 'utf-8', function (err, data) {
+
+// Empezamos a leer las credenciales mediante un JSON
+fs.readFile('credenciales.json', 'utf-8', function (err, data) {
     if (err) throw err;
-    creds = JSON.parse(data);
-    client = redis.createClient('redis://' + creds.user + ':' + creds.password + '@' + creds.host + ':' + creds.port);
+    credenciales = JSON.parse(data);
+    cliente = redis.createClient('redis://' + credenciales.usuario + ':' + credenciales.contraseña + '@' + credenciales.servidor + ':' + credenciales.puerto);
 
-    // Redis Client Ready
-    client.once('ready', function () {
-	console.log('ready');
-        // Flush Redis DB
-        // client.flushdb();
+    // El cliente de Redis se encontrará preparado
+    cliente.once('ready', function () {
+		console.log('preparado');
+        // Limpiamos la base de data (se puede dejar comentado)
+        cliente.flushdb();
 
-        // Initialize Chatters
-        client.get('chat_users', function (err, reply) {
+        // Populamos los usuarios
+        cliente.get('usuariosChat', function (err, reply) {
             if (reply) {
-                chatters = JSON.parse(reply);
+                usuarios = JSON.parse(reply);
             }
         });
 
-        // Initialize Messages
-        client.get('chat_app_messages', function (err, reply) {
+        // Populamos los mensajes
+        cliente.get('mensajesChat', function (err, reply) {
             if (reply) {
-                chat_messages = JSON.parse(reply);
+                mensajes = JSON.parse(reply);
             }
         });
     });
 });
 
-var port = process.env.PORT || 8080;
+// Almacena los usuarios del chat
+var usuarios = [];
 
-// Start the Server
-http.listen(port, function () {
-    console.log('Server Started. Listening on *:' + port);
+// Almacena los mensajes del chat, junto a su usuario
+var mensajes = [];
+
+
+var puerto = process.env.PORT || 8080;
+
+// Arrancamos el servidor
+http.listen(puerto, function () {
+    console.log('El servidor arrancó. Transmitiendo por *:' + puerto);
 });
 
-// Store people in chatroom
-var chatters = [];
 
-// Store messages in chatroom
-var chat_messages = [];
 
-// Express Middleware
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({
+// Usamos Express Middleware
+//Declaramos la ruta donde se encontrarán nuestros archivos CSS y JavaScript
+aplicacion.use(express.static('public'));
+//Nos devolverá el Middleware resultando en un nuevo cuerpo con pares clave-valor de cualquier tipo( por extended:true)
+aplicacion.use(bodyParser.urlencoded({
     extended: true
 }));
 
-// Render Main HTML file
-app.get('/', function (req, res) {
-    res.sendFile('views/index.html', {
+// Generamos el archivo html principal
+aplicacion.get('/', function (req, res) {
+    res.sendFile('index.html', {
         root: __dirname
     });
 });
 
-// API - Join Chat
-app.post('/join', function (req, res) {
-    var username = req.body.username;
-    if (chatters.indexOf(username) === -1) {
-        chatters.push(username);
-        client.set('chat_users', JSON.stringify(chatters));
+// Unión - Se usará cuando un nuevo usuario entra en la aplicación e intenta unirse a la sala de chat
+aplicacion.post('/unirse', function (req, res) {
+    var nombreUsuario = req.body.nombreUsuario;
+    if (usuarios.indexOf(nombreUsuario) === -1) {
+        usuarios.push(nombreUsuario);
+        cliente.set('usuariosChat', JSON.stringify(usuarios));
         res.send({
-            'chatters': chatters,
-            'status': 'OK'
+            'usuarios': usuarios,
+            'estado': 'OK'
         });
     } else {
         res.send({
-            'status': 'FAILED'
+            'estado': 'FALLO'
         });
     }
 });
 
-// API - Leave Chat
-app.post('/leave', function (req, res) {
-    var username = req.body.username;
-    chatters.splice(chatters.indexOf(username), 1);
-    client.set('chat_users', JSON.stringify(chatters));
+// Abandonar - Se usará cuando un usuario deja la sala de chat
+aplicacion.post('/abandonar', function (req, res) {
+    var nombreUsuario = req.body.nombreUsuario;
+    usuarios.splice(usuarios.indexOf(nombreUsuario), 1);
+    cliente.set('usuariosChat', JSON.stringify(usuarios));
     res.send({
-        'status': 'OK'
+        'estado': 'OK'
     });
 });
 
-// API - Send + Store Message
-app.post('/send_message', function (req, res) {
-    var username = req.body.username;
-    var message = req.body.message;
-    chat_messages.push({
-        'sender': username,
-        'message': message
+// Enviar mensaje - Se usará cuando un usuario envíe un mensaje, además lo guardará en la base de data de Redis
+aplicacion.post('/enviarMensaje', function (req, res) {
+    var nombreUsuario = req.body.nombreUsuario;
+    var mensaje = req.body.mensaje;
+    mensajes.push({
+        'remitente': nombreUsuario,
+        'mensaje': mensaje
     });
-    client.set('chat_app_messages', JSON.stringify(chat_messages));
+    cliente.set('mensajesChat', JSON.stringify(mensajes));
     res.send({
-        'status': 'OK'
+        'estado': 'OK'
     });
 });
 
-// API - Get Messages
-app.get('/get_messages', function (req, res) {
-    res.send(chat_messages);
+// Consultar mensajes - Devolverá todos los mensajes que se han enviado
+aplicacion.get('/consultarMensajes', function (req,res) {
+    res.send(mensajes);
 });
 
-// API - Get Chatters
-app.get('/get_chatters', function (req, res) {
-    res.send(chatters);
+// Consultar usuarios - Devolverá todos los usuarios que han entrado en la sala de chat
+aplicacion.get('/consultarUsuarios', function (req,res) {
+    res.send(usuarios);
 });
 
-// Socket Connection
-// UI Stuff
+// Conexión del Socket
+// Manipulando la interfaz de usuario
 io.on('connection', function (socket) {
 
-    // Fire 'send' event for updating Message list in UI
-    socket.on('message', function (data) {
-        io.emit('send', data);
+    // Lanza el evento de actualizar la lista de mensajes
+    socket.on('mensaje', function (data) {
+        io.emit('enviar', data);
     });
 
-    // Fire 'count_chatters' for updating Chatter Count in UI
-    socket.on('update_chatter_count', function (data) {
-        io.emit('count_chatters', data);
+    // Lanza el evento de contar usuarios
+    socket.on('actualizarNumeroUsuarios', function (data) {
+        io.emit('contarUsuarios', data);
     });
 
 });

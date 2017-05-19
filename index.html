@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Web Chat con Redis</title>
+      <link rel="stylesheet" href="principal.css">
+    </head>
+    <body>
+        <div class="contenedor">
+            <h1 class="titulo">Web Chat con Redis</h1>
+            <div class="unirse-chat">
+                <label for="nombreUsuario">Usuario:</label>
+                <input type="text" id="nombreUsuario" name="nombreUsuario" />
+                <input type="button" id="unirse-chat" value="Unirse al Chat" class="cssbutton"/>
+            </div><br />
+            <div class="informacion-chat"></div><br />
+            <div class="chat">
+                <div class="mensajes"></div>
+                <textarea name="mensaje" id="mensaje" cols="90" rows="5" placeholder="Introduce tu mensaje..." class="csstextarea"></textarea><br /><br />
+                <input type="button" id="enviar-mensaje" data-nombreUsuario="" value="Enviar Mensaje" class="cssbutton"/> 
+                <input type="button" id="abandonar-chat" data-nombreUsuario="" value="Abandonar Chat" class="cssbutton"/>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.6.0/socket.io.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="principal.js"></script>
+		
+    </body>
+	<footer class="pie">
+		<p>Chat desarrollado por Alejandro Juan Gracia Sierra & Álvaro Sánchez López</p>
+		<p>Asignatura CBD (Universidad de Sevilla) 2016-2017</p>
+	</footer>
+</html>
+
+

@@ -1,7 +1,7 @@
 {
   "name": "redis-chat",
   "version": "1.0.0",
-  "description": "Chat en tiempo real usando Redis, Node.js y Socket.IO",
+  "description": "Chat en tiempo real usando Redis, Node.js y Socket.io",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -9,7 +9,7 @@
   "author": "Alejandro Juan Gracia Sierra y Álvaro Sánchez López",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.17.1",
+    "body-parser": "^1.17.2",
     "express": "^4.15.2",
     "expressjs": "^1.0.1",
     "redis": "^2.7.1",
