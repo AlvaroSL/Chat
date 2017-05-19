@@ -93,7 +93,8 @@ $(function () {
     socket.on('enviar', function (data) {
         var nombreUsuario = data.nombreUsuario;
         var mensaje = data.mensaje;
-        var html = "<div class='msg'><div class='usuario'>" + nombreUsuario + "</div><div class='txt'>" + mensaje + "</div></div>";
+		var f = new Date();
+        var html = "<div class='msg'><div class='usuario'>" + nombreUsuario + "</div><div class='txt'>" + mensaje +document.write(f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()) +"</div></div>";
         $('.mensajes').append(html);
     });
     socket.on('contarUsuarios', function (data) {
