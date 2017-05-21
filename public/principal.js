@@ -37,6 +37,10 @@ $(function () {
                     alert("Lo siento pero el nombre de usuario ya existe, por favor escoja otro");
                     $('#nombreUsuario').val('').focus();
                 }
+				else if (response.estado == 'INVALIDO') { //El nombre de usuario no es válido
+                    alert("Lo siento pero el nombre de usuario no debe de estar vacío, por favor escoja otro");
+                    $('#nombreUsuario').val('').focus();
+                }
             }
         });
     });
@@ -93,6 +97,10 @@ $(function () {
 						'hora': hora
                     });
                     $('#mensaje').val('');
+                }
+				else if (response.estado == 'INVALIDO') { //El mensaje no es válido
+                    alert("No introduzca mensajes vacíos");
+                    $('#mensaje').val('').focus();
                 }
             }
         });

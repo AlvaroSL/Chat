@@ -71,17 +71,31 @@ aplicacion.get('/', function (req, res) {
     });
 });
 
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
+
+function isBlank(str) {
+    return (!str || /^\s*$/.test(str));
+}
+
+
 // Unión - Se usará cuando un nuevo usuario entra en la aplicación e intenta unirse a la sala de chat
 aplicacion.post('/unirse', function (req, res) {
     var nombreUsuario = req.body.nombreUsuario;
-    if (usuarios.indexOf(nombreUsuario) === -1) {
+    if (usuarios.indexOf(nombreUsuario) === -1 && !isEmpty(nombreUsuario) && !isBlank(nombreUsuario)) {
         usuarios.push(nombreUsuario);
         cliente.set('usuariosChat', JSON.stringify(usuarios));
         res.send({
             'usuarios': usuarios,
             'estado': 'OK'
         });
-    } else {
+    } else if(isEmpty(nombreUsuario) || isBlank(nombreUsuario)){
+		res.send({
+            'estado': 'INVALIDO'
+        });
+	}
+	else {
         res.send({
             'estado': 'FALLO'
         });
@@ -104,15 +118,22 @@ aplicacion.post('/enviarMensaje', function (req, res) {
     var mensaje = req.body.mensaje;
 	var d= new Date();
 	var hora= d.getDate() + "/" + (d.getMonth() +1) + "/" + d.getFullYear()+ ', '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
-    mensajes.push({
-        'remitente': nombreUsuario,
-        'mensaje': mensaje,
-		'hora': hora
-    });
-    cliente.set('mensajesChat', JSON.stringify(mensajes));
-    res.send({
-        'estado': 'OK'
-    });
+    if(!isEmpty(mensaje) && !isBlank(mensaje)){
+		mensajes.push({
+			'remitente': nombreUsuario,
+			'mensaje': mensaje,
+			'hora': hora
+		});
+		cliente.set('mensajesChat', JSON.stringify(mensajes));
+		res.send({
+			'estado': 'OK'
+		});
+		}
+	else{
+		res.send({
+			'estado': 'INVALIDO'
+		});
+	}
 });
 
 // Consultar mensajes - Devolverá todos los mensajes que se han enviado
