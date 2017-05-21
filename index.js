@@ -102,9 +102,12 @@ aplicacion.post('/abandonar', function (req, res) {
 aplicacion.post('/enviarMensaje', function (req, res) {
     var nombreUsuario = req.body.nombreUsuario;
     var mensaje = req.body.mensaje;
+	var d= new Date();
+	var hora= d.getDate() + "/" + (d.getMonth() +1) + "/" + d.getFullYear()+ ', '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
     mensajes.push({
         'remitente': nombreUsuario,
-        'mensaje': mensaje
+        'mensaje': mensaje,
+		'hora': hora
     });
     cliente.set('mensajesChat', JSON.stringify(mensajes));
     res.send({

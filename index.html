@@ -14,8 +14,10 @@
                 <input type="button" id="unirse-chat" value="Unirse al Chat" class="cssbutton"/>
             </div><br />
             <div class="informacion-chat"></div><br />
+			<script type="text/javascript">
+			function startTime(){ today=new Date(); h=today.getHours(); m=today.getMinutes(); s=today.getSeconds(); m=checkTime(m); s=checkTime(s); document.getElementById('reloj').innerHTML="Hora actual: "+h+":"+m+":"+s; t=setTimeout('startTime()',500);} function checkTime(i) {if (i<10) {i="0" + i;}return i;} window.onload=function(){startTime();} </script> <div id="reloj"></div>
             <div class="chat">
-                <div class="mensajes"></div>
+                <div class="mensajes" style=" height:400px; overflow-y:auto; overflow-x: hidden;"></div>
                 <textarea name="mensaje" id="mensaje" cols="90" rows="5" placeholder="Introduce tu mensaje..." class="csstextarea"></textarea><br /><br />
                 <input type="button" id="enviar-mensaje" data-nombreUsuario="" value="Enviar Mensaje" class="cssbutton"/> 
                 <input type="button" id="abandonar-chat" data-nombreUsuario="" value="Abandonar Chat" class="cssbutton"/>

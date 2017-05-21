@@ -1,6 +1,6 @@
 
 .contenedor {
-    width: 800px;
+    width: 100%;
     margin: 0 auto;
 	font: normal 16px/normal "Lucida Console", Monaco, monospace;
 	background: url("http://i67.tinypic.com/2d9bke8.png");
@@ -54,7 +54,7 @@
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
-  width: 758px;
+  width: auto;
   padding: 20px;
   overflow: hidden;
   border: none;
@@ -72,7 +72,7 @@
 .mensajes {
     border: 0px solid darkgrey;
     border-bottom: none;
-    width: 800px;
+    width: auto;
     height: 240px;
 }
 
@@ -102,5 +102,5 @@
 	text-align: center;
     height: 100px;
     margin: auto;
-    width: 450px;
+    width: 100%;
 }

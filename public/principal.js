@@ -13,7 +13,6 @@ $(function () {
             type: 'POST',
             data: {
                 nombreUsuario: nombreUsuario
-				//
             },
             success: function (response) {
                 if (response.estado == 'OK') { //El usuario aún no existe
@@ -28,7 +27,7 @@ $(function () {
                             var numeroMensajes = response.length;
                             var html = '';
                             for (var x = 0; x < numeroMensajes; x++) {
-                                html += "<div class='msg'><div class='usuario'>" + response[x]['remitente'] + "</div><div class='txt'>" + response[x]['mensaje'] + "</div></div>";
+                                html += "<div class='msg'><div class='usuario'>" + response[x]['remitente'] + "</div>"+ "(" +response[x]['hora']+ "): "  + response[x]['mensaje'] + "</div>";
                             }
                             $('.mensajes').html(html);
                         }
@@ -43,19 +42,22 @@ $(function () {
     });
     $('#abandonar-chat').click(function () {
         var nombreUsuario = $(this).data('nombreUsuario');
+		var d= new Date();
+		var hora= d.getDate() + "/" + (d.getMonth() +1) + "/" + d.getFullYear()+ ', '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
         $.ajax({
             url: '/abandonar',
             type: 'POST',
             dataType: 'json',
             data: {
-                nombreUsuario: nombreUsuario
+                nombreUsuario: nombreUsuario,
+				hora: hora
             },
             success: function (response) {
                 if (response.estado == 'OK') {
                     socket.emit('mensaje', {
                         'nombreUsuario': nombreUsuario,
                         'mensaje': nombreUsuario + " ha abandonado la sala.."
-						//
+	
                     });
                     socket.emit('actualizarNumeroUsuarios', {
                         'accion': 'decrementar'
@@ -71,19 +73,23 @@ $(function () {
     $('#enviar-mensaje').click(function () {
         var nombreUsuario = $(this).data('nombreUsuario');
         var mensaje = $.trim($('#mensaje').val());
+		var d= new Date();
+		var hora= d.getDate() + "/" + (d.getMonth() +1) + "/" + d.getFullYear()+ ', '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
         $.ajax({
             url: '/enviarMensaje',
             type: 'POST',
             dataType: 'json',
             data: {
                 'nombreUsuario': nombreUsuario,
-                'mensaje': mensaje
+                'mensaje': mensaje,
+				'hora': hora
             },
             success: function (response) {
                 if (response.estado == 'OK') {
                     socket.emit('mensaje', {
                         'nombreUsuario': nombreUsuario,
-                        'mensaje': mensaje
+                        'mensaje': mensaje,
+						'hora': hora
                     });
                     $('#mensaje').val('');
                 }
@@ -93,8 +99,8 @@ $(function () {
     socket.on('enviar', function (data) {
         var nombreUsuario = data.nombreUsuario;
         var mensaje = data.mensaje;
-		var f = new Date();
-        var html = "<div class='msg'><div class='usuario'>" + nombreUsuario + "</div><div class='txt'>" + mensaje +document.write(f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()) +"</div></div>";
+		var hora = data.hora;
+        var html = "<div class='msg'><div class='usuario'>" + nombreUsuario +"</div><div class='txt'>" +"(" + hora + "): " +mensaje + "</div></div>";
         $('.mensajes').append(html);
     });
     socket.on('contarUsuarios', function (data) {
