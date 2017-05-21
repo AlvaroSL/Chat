@@ -56,6 +56,7 @@ $(function () {
                 if (response.estado == 'OK') {
                     socket.emit('mensaje', {
                         'nombreUsuario': nombreUsuario,
+						'hora': hora,
                         'mensaje': nombreUsuario + " ha abandonado la sala.."
 	
                     });
